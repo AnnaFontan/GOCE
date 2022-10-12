@@ -28,19 +28,25 @@ public class Evaluations {
         double F_el2 = 0.5 * Constants.acc.epsilon*Constants.acc.Aa*Math.pow(DV_2/(Constants.acc.g + x_a), 2); // [N] second electrostatic force
 
         double[] dY = new double[8];
+        dY[0] = 0;
+        dY[1] = 0;
+        dY[2] = 0;
+        dY[3] = 0;
+        dY[4] = F_ext; // out_acc[0]
+        dY[5] = F_el1; // out_acc[1]
+        dY[6] = F_el2; // out_acc[2]
+        dY[7] = dVout; // out_acc[3]
+
         if (j == 0) { // NO LINEARISATION
             dY[0] = v_a; // dY(1) = dot(x_a)
             dY[1] = -(F_ext - F_el1 + F_el2) / Constants.acc.m; // dY(2) = dot(v_a)
             dY[2] = dVout; // dY(3) = dot(Vout)
             dY[3] = (Constants.valve.Kpv * dVout + Constants.valve.Kiv * Vout); // dY(4) = dot(I):PI controller
             // out_acc = 0;
-        }
-        else { // linearisation
-            // dY = 0; // don't need these values in the linearisation case
-            dY[4] = F_ext; // out_acc[0]
-            dY[5] = F_el1; // out_acc[1]
-            dY[6] = F_el2; // out_acc[2]
-            dY[7] = dVout; // out_acc[3]
+            dY[4] = 0; // out_acc[0]
+            dY[5] = 0; // out_acc[1]
+            dY[6] = 0; // out_acc[2]
+            dY[7] = 0; // out_acc[3]
         }
 
         return dY;
@@ -69,12 +75,13 @@ public class Evaluations {
                 Math.sqrt(Constants.IonT.k/(Constants.IonT.Rm*Constants.IonT.T2)); // [kg/s] mass flow rate
 
         double[] dY = new double[4];
-        if (j == 0) {
+        dY[0] = 0;
+        dY[1] = 0;
+        if (j == 0) { // NO LINEARISATION
             // State derivatives
             dY[0] = v_v; // dY(11) = dot(x_v)
             dY[1] = 1/Constants.valve.m_fcv * (Constants.valve.Kfcv*(2*Constants.valve.r0 - x_v) - Constants.valve.c*v_v - Constants.valve.Ki*I); // dY(12) = dot(v_v)
         }
-
         dY[2] = A_d;
         dY[3] = m_dot;
 
@@ -94,14 +101,22 @@ public class Evaluations {
 
         double u = th + om; // [rad] argument of latitude
         double sma = Math.pow(h, 2)/(Constants.Earth.mu*(1 - Math.pow(e, 2))); // [km] semi-major axis
-        [RR, VV] = kep2car(sma, e, in, OM, om, th, Constants.Earth.mu); // radius and velocity vectors
+        double[] RRVV = Conversions.kep2car(sma, e, in, OM, om, th, Constants.Earth.mu); // radius and velocity vectors
+        double[] RR = new double[3];
+        double[] VV = new double[3];
+        RR[0] = RRVV[0]; RR[1] = RRVV[1]; RR[2] = RRVV[2];
+        VV[0] = RRVV[3]; VV[1] = RRVV[4]; VV[2] = RRVV[5];
 
         /* Earth's radius (2D orbit) has been evaluated in cartesian coordinate using kep2car.
            Then the ellipse has been translated into the center of the Earth.
          */
         double E = th + om;
         double thE = 2*Math.atan(Math.sqrt((1 + Constants.Earth.e)/(1 - Constants.Earth.e))*Math.tan(E/2)); // [rad] angle of GOCE projection on Earth's surface
-        [RR_Earth, ~] = kep2car(Constants.Earth.sma, Constants.Earth.e, Constants.orbit.i0, Constants.orbit.OM0, Constants.orbit.om0, thE, Constants.Earth.mu); // Earth's radius
+        double[] RRVV_Earth = Conversions.kep2car(Constants.Earth.sma, Constants.Earth.e, Constants.orbit.i0, Constants.orbit.OM0, Constants.orbit.om0, thE, Constants.Earth.mu); // Earth's radius
+        double[] RR_Earth = new double[3];
+        double[] VV_Earth = new double[3];
+        RR_Earth[0] = RRVV_Earth[0]; RR_Earth[1] = RRVV_Earth[1]; RR_Earth[2] = RRVV_Earth[2];
+        VV_Earth[0] = RRVV_Earth[3]; VV_Earth[1] = RRVV_Earth[4]; VV_Earth[2] = RRVV_Earth[5];
         RR_Earth[0] = RR_Earth[0] + Constants.Earth.sma*Constants.Earth.e; // translation into Earth's center
 
         double Rn = Math.pow(h, 2)/(Constants.Earth.mu*(1 + e*Math.cos(th))); // [km] radius norm
@@ -124,7 +139,7 @@ public class Evaluations {
         if (j == 0) { // NO LINEARISATION
             double[] v_rel = OP.array_sub(VV, OP.array_cross_product(Constants.Earth.wE, RR)); // [km / s]relative velocity
             H = OP.norm(OP.array_sub(RR, RR_Earth)); // [km]altitude
-            rho = Coversions.density(H); // [kg / km ^ 3]
+            rho = Conversions.density(H); // [kg / km ^ 3]
 
             // Perturbing gravitation acceleration: drag
             p_drag = OP.array_coeff_product(-0.5*rho*OP.norm(v_rel)/ Constants.GOCE.beta, v_rel); // [km / s^2] acceleration due to drag
@@ -181,5 +196,7 @@ public class Evaluations {
         dY[20] = RR_Earth[0];
         dY[21] = RR_Earth[1];
         dY[22] = RR_Earth[2];
+
+        return dY;
     }
 }

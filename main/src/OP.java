@@ -58,4 +58,45 @@ public class OP {
         }
         return sum;
     }
+
+    public static double[][] matrix_product(double[][] A, double[][] B) {
+        double[][] C = new double[A.length][B[0].length];
+        double sum;
+
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < B[0].length; j++) {
+                sum = 0;
+                for (int r = 0; r < A[0].length; r++) {
+                    sum += A[i][r] * B[r][j];
+                }
+                C[i][j] = sum;
+            }
+        }
+        return C;
+    }
+
+    public static double[][] matrix_transpose(double[][] A) {
+        double[][] T = new double[A[0].length][A.length];
+
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < A[0].length; j++) {
+                T[j][i] = A[i][j];
+            }
+        }
+        return T;
+    }
+
+    public static double[] matrix_array_product(double[][] A, double[] array) {
+        double[] b = new double[array.length];
+        double sum;
+
+        for (int i = 0; i < A.length; i++) {
+            sum = 0;
+            for (int j = 0; j < A[0].length; j++) {
+                sum += A[i][j] * array[j];
+            }
+            b[i] = sum;
+        }
+        return b;
+    }
 }

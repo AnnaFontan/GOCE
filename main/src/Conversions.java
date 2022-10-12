@@ -1,7 +1,7 @@
 import java.lang.Math;
 
-public class Coversions {
-    private Coversions() {
+public class Conversions {
+    private Conversions() {
         // restrict instantiation
     }
 
@@ -28,10 +28,8 @@ public class Coversions {
     public static double[] kep2car(double a, double e, double i, double OM, double om, double th, double mu) {
         // Function used in order to obtain the keplerian coordinates from the cartesian ones
 
-        int j;
-
-        double p = a * (1 - Math.pow(e,2)); // [km]semi - latus rectus
-        double r = p / (1 + e * Math.cos(th)); // [km]radius
+        double p = a * (1 - Math.pow(e,2)); // [km] semi - latus rectum
+        double r = p / (1 + e * Math.cos(th)); // [km] radius
 
         // Perifocal frame
         double[] rPF_direction = {Math.cos(th), Math.sin(th), 0};
@@ -44,15 +42,21 @@ public class Coversions {
         double[][] R1i = {{1, 0, 0}, {0, Math.cos(i), Math.sin(i)}, {0, -Math.sin(i), Math.cos(i)}};
         double[][] R3om = {{Math.cos(om), Math.sin(om), 0}, {-Math.sin(om), Math.cos(om), 0}, {0, 0, 1}};
 
-            GE2PF = R3om * R1i * R3OM; // cartesian ---> perifocal
-            PF2GE = GE2PF.'; // perifocal ---> cartesian
+        double[][] GE2PF = OP.matrix_product(OP.matrix_product(R3om, R1i), R3OM); // cartesian ---> perifocal
+        double[][] PF2GE = OP.matrix_transpose(GE2PF); // perifocal ---> cartesian
 
-            // Cartesian frame
-            rGE = PF2GE * rPF; // [km]radius vector
-            vGE = PF2GE * vPF; // [km / s]velocity vector
+        // Cartesian frame
+        double[] rGE = OP.matrix_array_product(PF2GE, rPF); // [km] radius vector
+        double[] vGE = OP.matrix_array_product(PF2GE, vPF); // [km/s] velocity vector
 
-            rr = rGE; // [km]radius vector
-            vv = vGE; // [km / s]velocity vector
-        }
+        double[] output = new double[6];
+        output[0] = rGE[0];
+        output[1] = rGE[1];
+        output[2] = rGE[2];
+        output[3] = vGE[0];
+        output[4] = vGE[1];
+        output[5] = vGE[2];
+
+        return output;
     }
 }
