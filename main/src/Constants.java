@@ -29,8 +29,8 @@ public final class Constants {
         public static final double OM0 = 0; // [rad] right ascension of the ascending node
         public static final double rp = alt0 + Earth.sma; // [km] radius of the pericenter
         public static final double sma0 = rp/(1 - e0); // [km] semi-major axis
-        public static final double orbit_T = 2*Math.PI*Math.sqrt(Math.pow(sma0, 3)/Earth.mu); // [s] period of the orbit
-        public static final double orbit_h0 = Math.sqrt(Earth.mu*sma0*(1 - Math.pow(e0, 2))); // [m^2/s] specific angular momentum
+        public static final double T = 2*Math.PI*Math.sqrt(Math.pow(sma0, 3)/Earth.mu); // [s] period of the orbit
+        public static final double h0 = Math.sqrt(Earth.mu*sma0*(1 - Math.pow(e0, 2))); // [m^2/s] specific angular momentum
     }
     // Accelerometer data
     public final class acc {

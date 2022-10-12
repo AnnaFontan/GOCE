@@ -59,4 +59,15 @@ public class Conversions {
 
         return output;
     }
+
+
+    public static double rad02pi (double angle) {
+        double f = 1 + Math.floor( Math.abs(angle)/(2*Math.PI) );
+
+        if (angle < 0) { angle = angle + f*2*Math.PI; }
+        else { angle = angle - f*2*Math.PI; }
+
+        return angle;
+    }
+
 }

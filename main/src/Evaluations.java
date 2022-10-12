@@ -73,8 +73,7 @@ public class Evaluations {
         double A_d = Math.pow(Constants.valve.r0, 2)/2 * (alpha - Math.sin(alpha)); // [m^2] orifice area
         double m_dot = IonT_P2*A_d/Math.pow((Constants.IonT.k + 1)/2, (Constants.IonT.k + 1)/(2*(Constants.IonT.k - 1))) *
                 Math.sqrt(Constants.IonT.k/(Constants.IonT.Rm*Constants.IonT.T2)); // [kg/s] mass flow rate
-        System.out.println(z);
-        System.out.println(alpha - Math.sin(alpha));
+
         double[] dY = new double[4];
         dY[0] = 0;
         dY[1] = 0;
@@ -162,7 +161,10 @@ public class Evaluations {
         double pw = OP.array_scalar_product(vect, w); // (1x1)
 
         // The values of default are the ones of the linearisation case
-        double[] dY = {0, 0, 0, 0, 0}; // don't need these values in the linearisation case
+        double[] dY = new double[23]; // don't need these values in the linearisation case
+        for(int i = 0; i < 6; i++){ // default values = if linearisation
+            dY[i] = 0;
+        }
         double[] out_lin = {Rn, pr, ps, pw}; // output parameters
         if (j == 0) {
         // Orbital Mechanics: first derivatives

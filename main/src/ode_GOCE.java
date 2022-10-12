@@ -1,12 +1,18 @@
 import java.lang.Math;
-public class ode_GOCE {
-    private ode_GOCE() {
-        // restrict instantiation
+
+import org.apache.commons.math3.exception.DimensionMismatchException;
+import org.apache.commons.math3.exception.MaxCountExceededException;
+import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
+public class ode_GOCE implements FirstOrderDifferentialEquations {
+
+    public int getDimension() {
+        return 12;
     }
 
-    public static double[] function(double t, double[] y, String failure) {
+    public void computeDerivatives(double t, double[] y, double[] dY) {
         // Function of first order ODEs to solve the whole system
 
+        String failure = "";
         int linearisation = 0; // no linearisation considered
 
         // Orbital Mechanics
@@ -66,7 +72,6 @@ public class ode_GOCE {
         System.arraycopy(dY3, 0, dY_Acc, 0, dY_Acc.length);
 
         // State vector: differential equations ------------------------------------------------------------------------
-        double[] dY = new double[12];
         String s3 = "I";
         System.arraycopy(dY_OrbMech, 0, dY, 0, dY_OrbMech.length); // differential equations related to the Orbital Mechanic system [6x1]
         System.arraycopy(dY_Acc, 0, dY, dY_OrbMech.length, dY_Acc.length); // differential equations related to the system of the accelerometer [4x1]
@@ -89,8 +94,5 @@ public class ode_GOCE {
         System.arraycopy(D_v, 0, output, 19, 3);
         System.arraycopy(RR, 0, output, 22, 3);
         System.arraycopy(RR_Earth, 0, output, 25, 3);
-
-        return output;
     }
 }
-
