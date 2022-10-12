@@ -73,7 +73,8 @@ public class Evaluations {
         double A_d = Math.pow(Constants.valve.r0, 2)/2 * (alpha - Math.sin(alpha)); // [m^2] orifice area
         double m_dot = IonT_P2*A_d/Math.pow((Constants.IonT.k + 1)/2, (Constants.IonT.k + 1)/(2*(Constants.IonT.k - 1))) *
                 Math.sqrt(Constants.IonT.k/(Constants.IonT.Rm*Constants.IonT.T2)); // [kg/s] mass flow rate
-
+        System.out.println(z);
+        System.out.println(alpha - Math.sin(alpha));
         double[] dY = new double[4];
         dY[0] = 0;
         dY[1] = 0;
